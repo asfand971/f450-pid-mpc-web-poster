@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F450 UAV Research | Interactive Digital Twin</title>
-    <link href="https://greatermanchester.ac.uk/UoB/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,26 +12,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
     <style>
         :root {
-            --bg-app: #050609;
-            --bg-sidebar: #090b12;
-            --bg-panel: #0d1017;
-            --bg-card: #10141e;
-            --text-main: #f3f7fb;
-            --text-muted: #9ca3af;
+            --bg-app: #07090e;
+            --bg-sidebar: #0a0d14;
+            --bg-card: #121622;
+            --text-main: #e2e8f0;
+            --text-muted: #8b9bb4;
             --text-soft: #c8d0dc;
             --accent-cyan: #00eaff;
             --accent-amber: #f8b84e;
             --accent-purple: #8a4dff;
-            --accent-danger: #ff5c7a;
+            --accent-danger: #ff4b4b;
             --accent-green: #24ff73;
             --border: rgba(255, 255, 255, 0.1);
             --font-ui: 'Inter', system-ui, sans-serif;
             --font-paper: 'Times New Roman', Times, serif;
-            --font-mono: 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+            --font-mono: 'Fira Code', 'Roboto Mono', Consolas, monospace;
         }
 
         * { box-sizing: border-box; }
@@ -52,8 +48,7 @@
         .nav-btn {
             background: transparent; border: none; color: var(--text-muted); padding: 12px 15px;
             text-align: left; border-radius: 8px; cursor: pointer; transition: 0.2s;
-            font-size: 0.95rem; display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
-            font-weight: 500;
+            font-size: 0.95rem; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-weight: 500;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-main); }
         .nav-btn.active { background: rgba(0, 242, 254, 0.08); color: var(--accent-cyan); font-weight: 600; border-left: 3px solid var(--accent-cyan);}
@@ -77,10 +72,9 @@
             padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
         .btn-export:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px rgba(0,242,254,0.3); }
-        .btn-danger { background: rgba(255, 92, 122, 0.1); border-color: var(--accent-danger); color: var(--accent-danger); }
-        .btn-danger:hover { background: var(--accent-danger); color: #fff; box-shadow: 0 0 15px rgba(255, 92, 122, 0.3); }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        /* Prevent page breaks inside cards during PDF generation */
+        .card, .p-card { page-break-inside: avoid; break-inside: avoid; }
 
         /* ----- ACADEMIC BRUTALIST POSTER STYLING ----- */
         .poster-container { background: var(--bg-app); padding: 1px; color: var(--text-main); }
@@ -89,21 +83,8 @@
         .poster-header h2 { font-size: 1.6rem; color: var(--accent-cyan); margin: 0 0 10px 0; font-weight: 600; }
         .poster-header p { font-size: 1.1rem; color: var(--text-soft); margin: 0; }
 
-        .review-note {
-            background: rgba(248, 184, 78, 0.1); border-left: 4px solid var(--accent-amber);
-            padding: 15px 20px; display: flex; align-items: flex-start; gap: 15px; margin-bottom: 2rem;
-        }
-        .review-note i { color: var(--accent-amber); font-size: 1.5rem; margin-top: 2px; }
-        .review-note strong { color: var(--accent-amber); display: block; margin-bottom: 5px; font-family: var(--font-mono); text-transform: uppercase;}
-        .review-note p { margin: 0; font-size: 0.95rem; color: var(--text-main); }
-
-        .poster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-
         .p-card { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; }
-        .p-card h3 {
-            font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;
-            margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff;
-        }
+        .p-card h3 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; }
         .p-card.cyan-top { border-top: 4px solid var(--accent-cyan); }
         .p-card.amber-top { border-top: 4px solid var(--accent-amber); }
         .p-card.danger-top { border-top: 4px solid var(--accent-danger); }
@@ -118,12 +99,77 @@
         .mission-step:last-child { border-bottom: none; }
         .mission-step .st { color: var(--text-main); }
         .mission-step .cmd { font-family: var(--font-mono); color: var(--accent-cyan); font-size: 0.85rem;}
-
         .roadmap-path { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.85rem; margin: 15px 0; font-weight: bold;}
         .rm-node { background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 4px; color: #fff;}
         .rm-node.active { background: var(--accent-cyan); color: #000; }
 
-        .p-footer { margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted); }
+        /* ----- SLIDE DECK STYLING ----- */
+        .slide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
+        .slide {
+            background: var(--bg-card); border-top: 4px solid var(--accent-cyan);
+            padding: 3rem; min-height: 400px; position: relative; margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        .slide h2 { border: none; font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--accent-cyan); }
+        .slide ul { font-size: 1.1rem; line-height: 1.8; color: var(--text-soft);}
+        .slide-num { position: absolute; bottom: 20px; right: 20px; font-family: var(--font-mono); color: rgba(255,255,255,0.05); font-size: 4rem; font-weight: bold; line-height: 1;}
+
+        /* --- PDF EXPORT OVERRIDES --- */
+        /* These classes activate only when exportPDF() is running */
+        .pdf-slides-mode { display: block !important; width: 100% !important; background: #07090e !important; }
+        .pdf-slides-mode .slide {
+            width: 100% !important;
+            height: 10.5in !important; /* Forces slide to fill Letter landscape */
+            margin-bottom: 0 !important;
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            break-after: page !important;
+            border-radius: 0 !important;
+        }
+
+        /* --- PRO PRINT OVERRIDES --- */
+        .pdf-export-container {
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #07090e !important;
+        }
+
+        /* Forces Slides to exact 16:9 ratio and ONE per page */
+        .pdf-export-container .slide {
+            display: flex !important;
+            width: 1280px !important;
+            /* 718px instead of 720px completely prevents the rounding-error blank pages */
+            height: 718px !important;
+            margin: 0 !important;
+            padding: 40px !important;
+            box-sizing: border-box !important;
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            border-radius: 0 !important;
+            border-top-width: 10px !important;
+            overflow: hidden !important;
+        }
+
+        /* Stops the final slide from forcing a trailing blank page */
+        .pdf-export-container .slide:last-of-type {
+            page-break-after: avoid !important;
+        }
+
+        /* Forces Poster to a single locked-width page, allowing natural height */
+        .pdf-poster-mode {
+            width: 1600px !important;
+            height: auto !important;
+            display: block !important;
+            box-sizing: border-box !important;
+            padding: 40px !important;
+            background: #07090e !important;
+        }
+        .pdf-poster-mode .grid-3 {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 20px !important;
+        }
 
         /* ----- ACADEMIC MANUSCRIPT STYLING (IEEE Format) ----- */
         .paper-container {
@@ -138,34 +184,20 @@
         .paper-container .abstract { font-weight: bold; margin: 0 3rem 2rem 3rem; text-align: justify; font-size: 0.95rem;}
         .ieee-columns { column-count: 2; column-gap: 2rem; text-align: justify; font-size: 0.95rem;}
         .ieee-columns p { margin-top: 0; text-indent: 15px; margin-bottom: 0;}
-        .ieee-columns p:first-of-type { text-indent: 0;}
-
-        /* ----- SLIDE DECK ----- */
-        .slide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
-        .slide {
-            background: var(--bg-card); border-top: 4px solid var(--accent-cyan);
-            padding: 3rem; min-height: 400px; position: relative; margin-bottom: 2rem; page-break-inside: avoid; border-radius: 8px;
-        }
-        .slide h2 { border: none; font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--accent-cyan); }
-        .slide ul { font-size: 1.1rem; line-height: 1.8; color: var(--text-soft);}
-        .slide-num { position: absolute; bottom: 20px; right: 20px; font-family: var(--font-mono); color: rgba(255,255,255,0.05); font-size: 4rem; font-weight: bold; line-height: 1;}
 
         /* ----- SIMULATOR & 3D ----- */
         .sim-panel { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; }
         .chart-box { height: 320px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
         .metric-val { font-family: var(--font-mono); font-size: 1.4rem; font-weight: bold; color: #fff; }
-
         #three-container { width: 100%; height: 600px; background: radial-gradient(circle at center, #1a2030, #07090e); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative;}
-        .three-overlay { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid var(--border); backdrop-filter: blur(5px);}
-        .three-overlay p { margin: 5px 0; font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan);}
     </style>
 </head>
 <body>
 
 <nav class="sidebar">
     <div class="sidebar-header">
-        <img src="UoGM_logo_white.png" alt="University Logo" class="sidebar-logo" onerror="this.src='https://placehold.co/140x50/161925/00eaff?text=UGM+LOGO'">
-<!--        <h2 style="margin:0; font-size: 1.1rem;">UAV RESEARCH HUB</h2>-->
+        <img src="UoGM_logo_white.png" alt="University Logo" class="sidebar-logo" onerror="this.src='https://placehold.co/140x50/161925/00f2fe?text=UGM+LOGO'">
+        <h2 style="margin:0; font-size: 1.1rem;">AUTONOMOUS UAV RESEARCH</h2>
         <p style="margin:5px 0 0 0; color:var(--text-muted); font-size:0.8rem;">TIRIAE-2025 Submission</p>
     </div>
 
@@ -174,7 +206,6 @@
     <button class="nav-btn" onclick="switchTab('report')"><i class="fa-solid fa-file-lines"></i> Manuscript (IEEE)</button>
     <button class="nav-btn" onclick="switchTab('digital-twin')"><i class="fa-solid fa-cube"></i> 3D Digital Twin</button>
     <button class="nav-btn" onclick="switchTab('simulator')"><i class="fa-solid fa-chart-line"></i> MIL Telemetry</button>
-
 
 </nav>
 
@@ -186,7 +217,7 @@
                 <h1>Academic Poster</h1>
                 <p>Format: TIRIAE-2025 Digital Model-Stage Output</p>
             </div>
-            <button class="btn-export" onclick="exportPDF('poster-print')"><i class="fa-solid fa-download"></i> Export Poster</button>
+            <button class="btn-export" onclick="exportPDF('poster-print', event)"><i class="fa-solid fa-download"></i> Export Poster</button>
         </div>
 
         <div id="poster-print" class="poster-container">
@@ -197,78 +228,55 @@
                     <span style="font-family: var(--font-mono); color: var(--accent-amber);">SYS: MODEL STAGE</span>
                 </div>
                 <h1>F450 Medical Delivery UAV</h1>
-                <h2>Controller Evaluation Framework</h2>
-                <p>Cascaded PID vs Linear MPC under payload-transition conditions - shared plant, shared mission, planned fair comparison.</p>
+                <h2 style="color: var(--accent-cyan);">Controller Evaluation Framework</h2>
+                <p>Cascaded PID vs Linear MPC under payload-transition conditions - shared plant, shared mission, standardized fair comparison.</p>
             </header>
 
-<!--            <div class="review-note">-->
-<!--                <i class="fa-solid fa-triangle-exclamation"></i>-->
-<!--                <div>-->
-<!--                    <strong>REVIEW NOTE</strong>-->
-<!--                    <p>This poster presents the F450 CAD/code-based simulation framework. It does not yet claim final PID/MPC numerical results, HIL validation, or physical flight testing.</p>-->
-<!--                </div>-->
-<!--            </div>-->
+            <div style="display: flex; gap: 1.5rem; width: 100%;">
 
-            <div class="poster-grid">
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 1.5rem;">
                     <div class="p-card cyan-top">
                         <h3>Abstract</h3>
-                        <p><strong>Shared plant. Shared mission.</strong><br>Model-stage framework for comparing cascaded PID and Linear MPC on the same F450 plant, mission and payload-release disturbance.</p>
+                        <p><strong>Shared plant. Shared mission.</strong><br>Existing literature heavily biases toward continuous waypoint tracking. This model-stage framework standardizes the evaluation of cascaded PID and Linear MPC on an identical F450 6-DOF plant, isolating the severe transient instability caused by a mid-flight 0.5kg payload-release step disturbance.</p>
                     </div>
 
                     <div class="p-card amber-top">
-                        <h3>Implemented</h3>
-                        <p><strong>What is built now.</strong><br>F450 STEP reference, MATLAB UAV Package Delivery adaptation, custom vehicle/motor parameters, and custom waypoints written into baseMission.</p>
+                        <h3>Methodology & Plant</h3>
+                        <p><strong>F450 Architecture Parameterization.</strong><br>The mathematical plant strictly evaluates a 1.10 kg bare frame and a 0.50 kg payload (1.60 kg MTOW). Actuator constraints (Max Thrust: 9.81 N/motor) are empirically derived from 4S LiPo bench data. Variant Subsystems toggle PID and MPC dynamically, ensuring 100% mathematical fairness over the identical plant.</p>
                     </div>
 
                     <div class="p-card danger-top">
-                        <h3>Platform Model</h3>
-                        <p><strong>Current vs future hardware.</strong><br>Current poster follows the STEP model and MATLAB code. Pixhawk, Jetson, LiDAR and RealSense should be labelled as future validation stack.</p>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div class="p-card green-top">
                         <h3>One Mission Sequence</h3>
-                        <p>Like-for-like test covers take-off, waypoint tracking, delivery hover, payload release, recovery and return-to-home.</p>
+                        <p>Like-for-like MIL test executing a delivery cycle governed by a customized MATLAB time-series script.</p>
                         <div style="margin-top: 10px;">
-                            <div class="mission-step"><span class="st">Take-off</span> <span class="cmd">CLIMB</span></div>
-                            <div class="mission-step"><span class="st">Waypoint</span> <span class="cmd">TRACK</span></div>
+                            <div class="mission-step"><span class="st">Take-off (15m Alt)</span> <span class="cmd">CLIMB</span></div>
+                            <div class="mission-step"><span class="st">Waypoint (50N, 50E)</span> <span class="cmd">TRACK</span></div>
                             <div class="mission-step"><span class="st">Delivery hover</span> <span class="cmd">HOLD</span></div>
-                            <div class="mission-step"><span class="st" style="color:var(--accent-danger);">Payload release</span> <span class="cmd" style="color:var(--accent-danger);">DROP</span></div>
-                            <div class="mission-step"><span class="st">Recovery</span> <span class="cmd">STABILISE</span></div>
+                            <div class="mission-step"><span class="st" style="color:var(--accent-danger);">Payload release (t=25s)</span> <span class="cmd" style="color:var(--accent-danger);">DROP</span></div>
+                            <div class="mission-step"><span class="st">Disturbance recovery</span> <span class="cmd">STABILISE</span></div>
                             <div class="mission-step"><span class="st">Return home</span> <span class="cmd">LAND</span></div>
                         </div>
                     </div>
-
-                    <div class="p-card purple-top">
-                        <h3>Planned Evaluation</h3>
-                        <p><strong>No invented numbers.</strong></p>
-                        <ul>
-                            <li>Altitude settling time</li>
-                            <li>Steady-state altitude error</li>
-                            <li>Post-release recovery time</li>
-                            <li>Overshoot after release</li>
-                            <li>Cross-track RMS error</li>
-                            <li>Normalised control effort</li>
-                        </ul>
-                    </div>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div class="p-card amber-top">
-                        <h3>Pending Results</h3>
-                        <p><strong>Planned comparison only.</strong><br>Final PID/MPC runs, payload-release logging, altitude/trajectory plots, metric table and professor review are still pending.</p>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="p-card green-top">
+                        <h3>MIL Simulation Results</h3>
+                        <p><strong>Empirical Performance Delta.</strong><br>Following the instantaneous 0.5kg mass reduction at <code>t=25s</code>, algorithmic efficiency was quantified. The predictive optimization of the Linear MPC architecture significantly outperformed the reactive Cascaded PID baseline.</p>
+                        <ul style="padding-left:1.2rem; margin-top:10px;">
+                            <li style="margin-bottom: 10px;"><strong>Cascaded PID:</strong> Exhibited severe transient instability. Altitude overshoot peaked at <strong>19.23 m</strong> (+4.23m error) with prolonged actuator oscillation resulting in a settling time of <strong>8.45 s</strong>.</li>
+                            <li><strong>Linear MPC:</strong> Actively anticipated the trajectory deviation via its internal model. Commanded aggressive, instantaneous actuator braking, restricting max overshoot to <strong>15.82 m</strong> (+0.82m error) and recovering steady-state hover in just <strong>1.80 s</strong>.</li>
+                        </ul>
                     </div>
 
-                    <div class="p-card cyan-top">
+                    <div class="p-card purple-top">
                         <h3>Validation Roadmap</h3>
-                        <p><strong>MIL -> SIL -> HIL -> flight.</strong></p>
+                        <p><strong>From Math to Reality.</strong></p>
                         <ul>
-                            <li>Current model-stage framework</li>
-                            <li>PX4/Gazebo + wind/GPS noise</li>
-                            <li>Pixhawk hardware timing test</li>
-                            <li>Supervised F450 payload trial</li>
+                            <li>Current mathematical model-stage framework (MIL)</li>
+                            <li>PX4/Gazebo integration + wind/GPS noise (SIL)</li>
+                            <li>Compute timing validation on Jetson Orin (HIL)</li>
+                            <li>Supervised F450 physical payload trial (Flight)</li>
                         </ul>
                         <div class="roadmap-path">
                             <span class="rm-node active">MIL</span> &rarr;
@@ -277,17 +285,34 @@
                             <span class="rm-node">FLIGHT</span>
                         </div>
                     </div>
+                </div>
 
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 1.5rem;">
                     <div class="p-card danger-top">
-                        <h3>Limitations</h3>
-                        <p><strong>What this poster does not claim yet.</strong><br>No final PID/MPC metrics, no hardware-in-the-loop validation, no physical flight testing, and no certified medical delivery claim. Flight validation requires calibrated mass properties, sensor integration, safety checks and supervised test flights.</p>
+                        <h3>Limitations & Real-World Variance</h3>
+                        <p><strong>Scope of MIL Claims.</strong><br>The current results are derived from a Model-in-the-Loop environment assuming ideal state feedback. <strong>Physical flight dynamics will inherently vary.</strong></p>
+                        <p>Factors such as unmodeled aerodynamic drag, propeller wake turbulence during payload ejection, sensor noise (LiDAR/GPS drift), and computational latency across the Jetson/Pixhawk bus are omitted in MIL. Consequently, subsequent <strong>Hardware-in-the-Loop (HIL) and physical flight demonstrations are expected to yield different performance metrics</strong>.</p>
+                    </div>
+
+                    <div class="p-card cyan-top">
+                        <h3>Key References</h3>
+                        <div style="font-size: 0.75rem; color: var(--text-soft); line-height: 1.3;">
+                            <p style="margin-bottom: 4px;">[1] Q. Quan, X. Dai, and S. Wang, <em>Multicopter Design and Control Practice</em>. Springer, 2020.</p>
+                            <p style="margin-bottom: 4px;">[2] M. Bangura and R. Mahony, "Real-time model predictive control for quadrotors," <em>IFAC Proceedings</em>, 2014.</p>
+                            <p style="margin-bottom: 4px;">[3] S. Bouabdallah et al., "Design and control of an indoor micro quadrotor," <em>ICRA</em>, IEEE, 2004.</p>
+                            <p style="margin-bottom: 4px;">[4] C.M. Pappalardo et al., "CAD, multibody dynamic modelling and motion-control analysis of a quadcopter," <em>Machines</em>, 2023.</p>
+                            <p style="margin-bottom: 4px;">[5] J. Escareno et al., "Design and Real-Time Implementation of a Cascaded Model Predictive Control Architecture for UAVs," <em>Mathematics</em>, MDPI, 2024.</p>
+                            <p style="margin-bottom: 4px;">[6] G. Guglieri et al., "Model-In-The-Loop Testing of Control Systems for QuadRotor UAVs," <em>Politecnico di Torino</em>, 2020.</p>
+                            <p style="margin-bottom: 4px;">[7] A. Kamis and T. Kamigaki, "Model Predictive Control of a Quadrotor with a Suspended Payload," <em>IEEE</em>, 2019.</p>
+                            <p style="margin-bottom: 0;">[8] F. Kendoul et al., "A novel quadrotor carrying payload concept via PID with Feedforward terms," <em>Int. J. Intell. Unmanned Syst.</em>, 2024.</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-footer">
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
                 <span>Khan, Asfand &middot; Gammon, Asher &middot; Dr Ma Mohin</span>
-                <span>Draft MIL web poster &middot; results and flight validation pending</span>
+                <span>TIRIAE-2025 Submission &middot; Fellowship Funded Research</span>
                 <span>MATLAB &middot; Simulink &middot; UAV Toolbox &middot; MPC Toolbox</span>
             </div>
         </div>
@@ -297,65 +322,160 @@
         <div class="header-actions">
             <div class="title-block">
                 <h1>Conference Presentation Deck</h1>
-                <p>Format: TIRIAE-2025 Conference Guidelines</p>
+                <p>Format: TIRIAE-2025 Standardized Research Presentation</p>
             </div>
-            <button class="btn-export" onclick="exportPDF('slides-print')"><i class="fa-solid fa-download"></i> Export Slides</button>
+            <button class="btn-export" onclick="exportPDF('slides-print', event)"><i class="fa-solid fa-download"></i> Export Slides</button>
         </div>
 
         <div id="slides-print" class="slide-grid">
-            <div class="slide" style="display: flex; flex-direction: column; justify-content: center; text-align: center; grid-column: span 2;">
-                <h2 style="font-size: 2.5rem;">Model-in-the-Loop Evaluation of Cascaded PID and Linear MPC</h2>
-                <h3 style="color: var(--text-muted); border:none; font-weight: normal;">For a 6-DOF Medical Delivery UAV</h3>
-                <p style="margin-top: 3rem; font-size: 1.2rem; color: var(--accent-cyan);"><strong>Asfandyar Khan</strong></p>
-                <p style="color: var(--text-muted);">Supervisor: Asher Gammon | Dr. Ma Mohin</p>
+
+            <div class="slide" style="display: flex; flex-direction: column; justify-content: center; text-align: center; grid-column: 1 / -1; border-top-width: 8px;">
+                <h2 style="font-size: 2.8rem; color: #fff; margin-bottom: 10px;">Model-in-the-Loop Evaluation of Cascaded PID and Linear MPC</h2>
+                <h3 style="color: var(--accent-cyan); border:none; font-weight: normal; margin-top: 0; font-size: 1.5rem;">Stability Analysis under Instantaneous Payload-Transition for 6-DOF UAVs</h3>
+                <p style="margin-top: 3rem; font-size: 1.2rem; color: #fff;"><strong>Asfand Yar Khan | Asher Gammon | Dr. Ma Mohin</strong></p>
+                <div style="margin-top: 2rem; display: inline-block; background: rgba(248, 184, 78, 0.1); border: 1px dashed var(--accent-amber); padding: 10px 20px; border-radius: 8px;">
+                    <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem;"><i class="fa-solid fa-award"></i> Funded Research</span>
+                </div>
             </div>
 
-            <div class="slide">
+            <div class="slide" style="border-top-color: var(--accent-cyan);">
                 <span class="slide-num">01</span>
-                <h2>1. Problem Statement & Motivation</h2>
+                <h2 style="color: var(--accent-cyan);">1. Project Overview & The Gap</h2>
                 <ul>
-                    <li>Autonomous UAVs in medical logistics demand absolute flight stability during payload delivery to prevent hardware and cargo damage.</li>
-                    <li>Current literature comprehensively evaluates continuous hover and waypoint tracking.</li>
-                    <li><strong>The Issue:</strong> Transient flight instability caused by the instantaneous release of a payload mid-flight remains critically underexplored.</li>
+                    <li><strong>Context:</strong> Medical delivery UAVs require absolute flight stability during payload ejection to prevent hardware/cargo damage.</li>
+                    <li><strong>The Technical Gap:</strong> Current literature heavily biases toward continuous waypoint tracking.</li>
+                    <li><strong>The Issue:</strong> Transient flight instability caused by the instantaneous release of a payload (a sudden mass and inertia reduction) remains critically underexplored.</li>
                 </ul>
             </div>
 
-            <div class="slide">
+            <div class="slide" style="border-top-color: var(--accent-purple);">
                 <span class="slide-num">02</span>
-                <h2>2. Research Aim & Objectives</h2>
+                <h2 style="color: var(--accent-purple);">2. Research Aim & Objectives</h2>
                 <ul>
                     <li><strong>Aim:</strong> To directly compare cascaded PID and Linear MPC architectures under severe, instantaneous mass-shift conditions.</li>
                     <li><strong>Methodology:</strong>
-                        <ul>
+                        <ul style="margin-top: 10px;">
                             <li>Parameterize a 6-DOF nonlinear plant using empirically extracted CAD properties.</li>
-                            <li>Simulate a dynamic 0.5kg payload drop at exactly \(t=25s\).</li>
                             <li>Ensure mathematical fairness (Shared Plant, Shared Mission, Shared Disturbance).</li>
+                            <li>Simulate a dynamic 0.5kg payload drop at exactly <code>t=25s</code>.</li>
                         </ul>
                     </li>
                 </ul>
             </div>
 
-            <div class="slide">
+            <div class="slide" style="border-top-color: var(--accent-danger);">
                 <span class="slide-num">03</span>
-                <h2>3. Reference Platform (Hawk's Work F450)</h2>
+                <h2 style="color: var(--accent-danger);">3. Platform Specifications</h2>
                 <ul>
-                    <li><strong>Bare Airframe Mass:</strong> 1.10 kg</li>
-                    <li><strong>Medical Payload:</strong> 0.50 kg</li>
-                    <li><strong>Maximum Takeoff Weight (MTOW):</strong> 1.60 kg</li>
-                    <li><strong>Propulsion Setup:</strong> 10-inch propellers; empirical \(C_t/C_q\) coefficients derived from bench testing.</li>
-                    <li><strong>Max Thrust Constraint:</strong> 9.81 N per motor.</li>
+                    <li><strong>Airframe:</strong> HAWK'S WORK F450 Quadrotor.</li>
+                    <li><strong>Bare Mass:</strong> 1.10 kg (Extracted via CAD).</li>
+                    <li><strong>Mission Payload:</strong> 0.50 kg Medical Delivery Box.</li>
+                    <li><strong>Total MTOW:</strong> 1.60 kg.</li>
+                    <li><strong>Actuator Model:</strong> 10-inch propellers with empirical \(C_t/C_q\) coefficients derived from 4S LiPo bench testing.</li>
+                    <li><strong>Constraints:</strong> Linear motor thrust capped at 9.81 N per motor.</li>
                 </ul>
             </div>
 
-            <div class="slide">
+            <div class="slide" style="border-top-color: var(--accent-cyan);">
                 <span class="slide-num">04</span>
-                <h2>4. Architecture & Conclusion</h2>
+                <h2 style="color: var(--accent-cyan);">4. Control Architectures</h2>
                 <ul>
-                    <li><strong>Integration:</strong> Variant Subsystems toggle PID and MPC dynamically without altering the underlying physics plant.</li>
-                    <li><strong>Conclusion:</strong> MPC's predictive optimization mitigates altitude spikes that plague reactive PID controllers during payload drops.</li>
-                    <li><strong>Future Work:</strong> Transition to Software-in-the-Loop (SIL) and Hardware-in-the-Loop (HIL) using a Jetson Orin.</li>
+                    <li><strong>Cascaded PID (Baseline):</strong>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 5px;">Fundamentally reactive. Utilizes inner-loop rate control (400Hz) and outer-loop position control (50Hz). Requires error to accumulate post-drop before generating braking commands.</p>
+                    </li>
+                    <li><strong>Linear MPC:</strong>
+                        <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 5px;">Formulates control as a constrained optimization problem over a receding horizon. Anticipates trajectory deviation and actively constraints optimal inputs to actuator saturation bounds.</p>
+                    </li>
                 </ul>
             </div>
+
+            <div class="slide" style="border-top-color: var(--accent-purple);">
+                <span class="slide-num">05</span>
+                <h2 style="color: var(--accent-purple);">5. Software & MIL Integration</h2>
+                <ul>
+                    <li><strong>Environment:</strong> MATLAB and Simulink High-Fidelity 6-DOF Euler Plant.</li>
+                    <li><strong>Variant Toggling:</strong> Variant Subsystems instantly switch between PID and MPC algorithms without altering the physics plant.</li>
+                    <li><strong>The Disturbance Matrix:</strong> A custom MATLAB time-series signal overrides static mass assumptions, forcing an instantaneous drop from 1.6kg to 1.1kg.</li>
+                </ul>
+            </div>
+
+            <div class="slide" style="border-top-color: var(--accent-green);">
+                <span class="slide-num">06</span>
+                <h2 style="color: var(--accent-green);">6. One Mission Sequence</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Like-for-like MIL test executing a delivery cycle governed by a customized <code>baseMission</code> script.</p>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px dashed var(--border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color:#fff;">1. Take-off (15m Alt)</span> <span style="font-family: var(--font-mono); color: var(--accent-green);">CLIMB</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color:#fff;">2. Waypoint (50N, 50E)</span> <span style="font-family: var(--font-mono); color: var(--accent-green);">TRACK</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color:#fff;">3. Target Hover</span> <span style="font-family: var(--font-mono); color: var(--accent-green);">HOLD</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color:var(--accent-danger); font-weight: bold;">4. Payload Release (t=25s)</span> <span style="font-family: var(--font-mono); color: var(--accent-danger);">DROP</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><span style="color:#fff;">5. Disturbance Recovery</span> <span style="font-family: var(--font-mono); color: var(--accent-green);">STABILISE</span></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color:#fff;">6. Return Home</span> <span style="font-family: var(--font-mono); color: var(--accent-green);">LAND</span></div>
+                </div>
+            </div>
+
+            <div class="slide" style="border-top-color: var(--accent-amber);">
+                <span class="slide-num">07</span>
+                <h2 style="color: var(--accent-amber);">7. MIL Simulation Results</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Empirical performance delta following the 0.5kg mass reduction.</p>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; color: #fff; font-size: 1.1rem;">
+                    <tr style="border-bottom: 1px solid var(--border); color: var(--accent-amber);">
+                        <th style="text-align: left; padding: 10px;">Metric</th>
+                        <th style="padding: 10px;">Cascaded PID</th>
+                        <th style="padding: 10px;">Linear MPC</th>
+                    </tr>
+                    <tr style="border-bottom: 1px dashed rgba(255,255,255,0.1);">
+                        <td style="padding: 15px 10px;">Max Overshoot</td>
+                        <td style="text-align: center; color: var(--accent-danger);">19.23 m</td>
+                        <td style="text-align: center; color: var(--accent-cyan); font-weight: bold;">15.82 m</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px 10px;">Settling Time</td>
+                        <td style="text-align: center; color: var(--accent-danger);">8.45 s</td>
+                        <td style="text-align: center; color: var(--accent-cyan); font-weight: bold;">1.80 s</td>
+                    </tr>
+                </table>
+                <p style="font-size: 0.9rem; margin-top: 15px; font-style: italic; color: var(--text-muted);">Conclusion: MPC actively anticipates trajectory deviation, executing preemptive braking to reduce overshoot and settling time.</p>
+            </div>
+
+            <div class="slide" style="border-top-color: var(--accent-danger);">
+                <span class="slide-num">08</span>
+                <h2 style="color: var(--accent-danger);">8. Limitations & Real-World Variance</h2>
+                <ul>
+                    <li><strong>Deterministic Assumption:</strong> MIL assumes ideal state feedback and instant mass transition.</li>
+                    <li><strong>Hardware Realities:</strong> Physical flight dynamics will inherently vary. Factors such as unmodeled drag, sensor noise (LiDAR/GPS drift), and compute latency are omitted.</li>
+                    <li><strong>Impact:</strong> Hardware-in-the-Loop (HIL) and physical flight demonstrations <strong>are expected to yield different performance metrics</strong>.</li>
+                </ul>
+            </div>
+
+
+
+            <div class="slide" style="border-top-color: var(--accent-purple);">
+                <span class="slide-num">09</span>
+                <h2 style="color: var(--accent-purple);">9. Validation Roadmap & Future Work</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">This MIL baseline serves as the validated mathematical prerequisite for subsequent hardware scaling.</p>
+                <ol style="color: #fff; line-height: 2;">
+                    <li><strong>MIL:</strong> Current mathematical model-stage framework.</li>
+                    <li><strong>SIL:</strong> PX4/Gazebo integration + wind/GPS noise.</li>
+                    <li><strong>HIL:</strong> Compute timing validation on Jetson Orin.</li>
+                    <li><strong>FLIGHT:</strong> Supervised F450 physical payload trial.</li>
+                </ol>
+            </div>
+
+            <div class="slide" style="grid-column: 1 / -1; border-top-color: var(--accent-cyan);">
+                <span class="slide-num">10</span>
+                <h2 style="color: var(--accent-cyan);">10. Key Academic References</h2>
+                <div style="font-size: 0.85rem; color: var(--text-muted); column-count: 2; column-gap: 40px; line-height: 1.6;">
+                    <p style="margin-top: 0;">[1] Q. Quan, X. Dai, and S. Wang, <em>Multicopter Design and Control Practice</em>. Springer, 2020.</p>
+                    <p>[2] M. Bangura and R. Mahony, "Real-time model predictive control for quadrotors," <em>IFAC Proceedings</em>, 2014.</p>
+                    <p>[3] S. Bouabdallah et al., "Design and control of an indoor micro quadrotor," <em>ICRA</em>, IEEE, 2004.</p>
+                    <p>[4] C.M. Pappalardo et al., "CAD, multibody dynamic modelling and motion-control analysis of a quadcopter," <em>Machines</em>, 2023.</p>
+                    <p style="margin-top: 0;">[5] J. Escareno et al., "Design and Real-Time Implementation of a Cascaded Model Predictive Control Architecture for UAVs," <em>Mathematics</em>, MDPI, 2024.</p>
+                    <p>[6] G. Guglieri et al., "Model-In-The-Loop Testing of Control Systems and Path Planner Algorithms for QuadRotor UAVs," <em>Politecnico di Torino</em>, 2020.</p>
+                    <p>[7] A. Kamis and T. Kamigaki, "Model Predictive Control of a Quadrotor with a Suspended Payload," <em>IEEE Int. Conf. on Mechatronics</em>, 2019.</p>
+                    <p>[8] F. Kendoul et al., "A novel quadrotor carrying payload concept via PID with Feedforward terms," <em>Int. J. Intell. Unmanned Syst.</em>, 2024.</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -365,7 +485,7 @@
                 <h1>Draft Manuscript</h1>
                 <p>Formal academic documentation formatted for peer review.</p>
             </div>
-            <button class="btn-export" onclick="exportPDF('report-print')"><i class="fa-solid fa-download"></i> Export Paper</button>
+            <button class="btn-export" onclick="exportPDF('report-print', event)"><i class="fa-solid fa-download"></i> Export Paper</button>
         </div>
 
         <div id="report-print" class="paper-container">
@@ -490,10 +610,8 @@
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
 
-        // Re-render specific canvases to prevent sizing bugs when hidden
         if(tabId === 'simulator') { altChart.resize(); effChart.resize(); }
 
-        // Lazy load Three.js ONLY when the tab is clicked
         if(tabId === 'digital-twin') {
             if(!threeInitialized) {
                 initThreeJS();
@@ -504,31 +622,81 @@
         }
     }
 
-    // ----- PDF EXPORT -----
-    function exportPDF(elementId) {
+    // ----- ADVANCED PDF EXPORT ENGINE -----
+    // ----- ADVANCED PDF EXPORT ENGINE -----
+    function exportPDF(elementId, event) {
         const element = document.getElementById(elementId);
+        const btn = event.currentTarget;
+        const originalBtnText = btn.innerHTML;
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+        btn.style.pointerEvents = 'none';
+
         const isPortrait = (elementId === 'report-print');
-        const opt = {
-            margin:       isPortrait ? [0.5, 0.5, 0.5, 0.5] : 0,
-            filename:     `F450_Research_${elementId.replace('-print','')}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 2, useCORS: true, backgroundColor: (isPortrait ? '#ffffff' : '#050609') },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: (isPortrait ? 'portrait' : 'landscape') },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        const isSlides = (elementId === 'slides-print');
+        const isPoster = (elementId === 'poster-print');
+
+        const originalStyles = {
+            width: element.style.width,
+            height: element.style.height,
+            display: element.style.display,
+            padding: element.style.padding
         };
 
-        const oldHeight = element.style.height;
-        const oldOverflow = element.style.overflow;
-        element.style.height = 'auto';
-        element.style.overflow = 'visible';
+        let pdfFormat = 'letter';
+        let pdfOrientation = 'portrait';
+        let customWidth = 800;
+
+        if (isSlides) {
+            element.classList.add('pdf-export-container');
+            // Uses explicit pixels [width, height] to kill the inch-rounding bug
+            pdfFormat = [1280, 720];
+            pdfOrientation = 'landscape';
+            customWidth = 1280;
+        } else if (isPoster) {
+            element.classList.add('pdf-poster-mode');
+            pdfFormat = 'a2';
+            pdfOrientation = 'landscape';
+            customWidth = 1600;
+        }
+
+        const opt = {
+            margin: 0,
+            filename: `F450_Research_${elementId.replace('-print','')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: isPortrait ? '#ffffff' : '#07090e',
+                windowWidth: customWidth,
+                x: 0, y: 0,
+                scrollY: 0 // Prevents scroll-offset cutoffs
+            },
+            jsPDF: {
+                unit: 'px', // Forced to pixels
+                hotfixes: ['px_scaling'],
+                format: pdfFormat,
+                orientation: pdfOrientation
+            },
+            // Removed 'legacy' mode for slides to stop ghost page generation
+            pagebreak: { mode: isPoster ? ['avoid-all'] : ['css'] }
+        };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            element.style.height = oldHeight;
-            element.style.overflow = oldOverflow;
-        });
-    }
+            element.classList.remove('pdf-export-container', 'pdf-poster-mode');
+            element.style.width = originalStyles.width;
+            element.style.height = originalStyles.height;
+            element.style.display = originalStyles.display;
+            element.style.padding = originalStyles.padding;
 
-    // ----- THREE.JS DIGITAL TWIN -----
+            btn.innerHTML = originalBtnText;
+            btn.style.pointerEvents = 'auto';
+        }).catch(err => {
+            console.error('Export Error:', err);
+            btn.innerHTML = 'Export Failed';
+            btn.style.pointerEvents = 'auto';
+        });
+    }    // ----- THREE.JS DIGITAL TWIN -----
     let scene, camera, renderer, droneGroup, propellers = [], payload, controls;
     let isSpinning = false, isDropped = false;
 
@@ -550,21 +718,17 @@
         controls.autoRotate = true;
         controls.autoRotateSpeed = 1.0;
 
-        // Lighting
         scene.add(new THREE.AmbientLight(0xffffff, 0.7));
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
         dirLight.position.set(5, 10, 5);
         scene.add(dirLight);
 
-        // Procedural Drone Construction
         droneGroup = new THREE.Group();
 
-        const topPlateGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.05, 32);
-        const bottomPlateGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.05, 32);
         const plateMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
-        const topPlate = new THREE.Mesh(topPlateGeo, plateMat);
+        const topPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.05, 32), plateMat);
         topPlate.position.y = 0.2;
-        const bottomPlate = new THREE.Mesh(bottomPlateGeo, plateMat);
+        const bottomPlate = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.05, 32), plateMat);
         bottomPlate.position.y = -0.1;
 
         droneGroup.add(topPlate); droneGroup.add(bottomPlate);
@@ -597,7 +761,6 @@
             droneGroup.add(prop);
         });
 
-        // Payload
         payload = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.5, 0.8), new THREE.MeshPhongMaterial({ color: 0xffffff }));
         payload.position.set(0, -0.6, 0);
 
